@@ -83,9 +83,6 @@ endif
 if with_vulkan_device_select_layer
   subdir('device-select-layer')
 endif
-if with_vulkan_screenshot_layer
-  subdir('screenshot-layer')
-endif
 if with_wrapper_vk
   subdir('wrapper')
 endif
