@@ -97,7 +97,7 @@ struct vk_instance;
 
 struct driOptionCache;
 
-#define VK_ICD_WSI_PLATFORM_MAX (VK_ICD_WSI_PLATFORM_HEADLESS + 1)
+#define VK_ICD_WSI_PLATFORM_MAX (VK_ICD_WSI_PLATFORM_METAL + 1)
 
 struct wsi_device {
    /* Allocator for the instance */
@@ -179,6 +179,9 @@ struct wsi_device {
 
    bool sw;
 
+   bool wants_ahardware_buffer;
+   bool needs_blit;
+
    /* Set to true if the implementation is ok with linear WSI images. */
    bool wants_linear;
 
@@ -202,6 +205,11 @@ struct wsi_device {
     * to be able to synchronize with the WSI present semaphore being unsignalled.
     * This requires VK_KHR_timeline_semaphore. */
    bool khr_present_wait;
+
+   struct {
+      /* Don't use the commit-timing protocol for pacing */
+      bool disable_timestamps;
+   } wayland;
 
    /*
     * This sets the ownership for a WSI memory object:
@@ -263,12 +271,18 @@ struct wsi_device {
    WSI_CB(GetPhysicalDeviceFormatProperties2);
    WSI_CB(GetPhysicalDeviceImageFormatProperties2);
    WSI_CB(GetSemaphoreFdKHR);
+   WSI_CB(ImportSemaphoreFdKHR);
+   WSI_CB(ImportFenceFdKHR);
    WSI_CB(ResetFences);
    WSI_CB(QueueSubmit);
    WSI_CB(WaitForFences);
    WSI_CB(MapMemory);
    WSI_CB(UnmapMemory);
    WSI_CB(WaitSemaphores);
+#ifdef __TERMUX__
+   WSI_CB(GetMemoryAndroidHardwareBufferANDROID);
+   WSI_CB(GetAndroidHardwareBufferPropertiesANDROID);
+#endif
 #undef WSI_CB
 
     struct wsi_interface *                  wsi[VK_ICD_WSI_PLATFORM_MAX];

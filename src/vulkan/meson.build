@@ -62,15 +62,19 @@ if with_xlib_lease
   vulkan_wsi_deps += [dep_xlib_xrandr]
   vulkan_wsi_list += '-DVK_USE_PLATFORM_XLIB_XRANDR_EXT'
 endif
-if with_platform_android
+if with_platform_android or with_wrapper_vk
   vulkan_wsi_list += '-DVK_USE_PLATFORM_ANDROID_KHR'
 endif
 if with_platform_windows
   vulkan_wsi_list += '-DVK_USE_PLATFORM_WIN32_KHR'
 endif
-if host_machine.system() == 'darwin'
+if with_platform_macos
   vulkan_wsi_list += '-DVK_USE_PLATFORM_MACOS_MVK'
   vulkan_wsi_list += '-DVK_USE_PLATFORM_METAL_EXT'
+  vulkan_wsi_deps += dependency(
+    'appleframeworks',
+    modules : ['QuartzCore', 'Metal']
+  )
 endif
 
 idep_vulkan_wsi_defines = declare_dependency(
@@ -87,6 +91,9 @@ if with_vulkan_overlay_layer
 endif
 if with_vulkan_device_select_layer
   subdir('device-select-layer')
+endif
+if with_vulkan_screenshot_layer
+  subdir('screenshot-layer')
 endif
 if with_wrapper_vk
   subdir('wrapper')
